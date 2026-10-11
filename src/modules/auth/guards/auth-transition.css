@@ -1,0 +1,69 @@
+.ml-auth-transition {
+  position: fixed;
+  inset: 0;
+
+  z-index: 999999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(248, 248, 245, 0.96);
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Main circular loader */
+.ml-auth-loader {
+  position: relative;
+
+  width: 76px;
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  border: 4px solid rgba(8, 126, 131, 0.14);
+  border-top-color: #087e83;
+
+  animation: matelink-loader-spin 0.9s linear infinite;
+}
+
+/* Inner shield icon */
+.ml-auth-loader__icon {
+  color: #087e83;
+
+  animation: matelink-icon-counter-spin 0.9s linear infinite;
+}
+
+@keyframes matelink-loader-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes matelink-icon-counter-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .ml-auth-loader,
+  .ml-auth-loader__icon {
+    animation-duration: 2s;
+  }
+}
