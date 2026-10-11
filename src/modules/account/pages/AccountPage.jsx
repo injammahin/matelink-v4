@@ -610,9 +610,16 @@ function AccountNavigation({ active, onChange }) {
   return (
     <nav
       aria-label="Customer account"
-      className="overflow-x-auto rounded-[16px] border border-[#dfe5e7] bg-white p-1.5 shadow-[0_5px_18px_rgba(16,45,67,0.025)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="rounded-[16px] border border-[#dfe5e7] bg-white p-1.5 shadow-[0_5px_18px_rgba(16,45,67,0.025)]"
     >
-      <div className="flex min-w-max items-center gap-1 lg:min-w-0">
+      {/*
+        Mobile: all five items are always visible in a 5-column grid.
+        No horizontal scrolling / sliding is required.
+
+        Tablet/Desktop: the same five items become a wider horizontal
+        navigation with icon + label in one line.
+      */}
+      <div className="grid grid-cols-5 gap-1">
         {ACCOUNT_SECTIONS.map(([id, label, Icon]) => {
           const selected = active === id;
 
@@ -621,14 +628,62 @@ function AccountNavigation({ active, onChange }) {
               key={id}
               type="button"
               onClick={() => onChange(id)}
-              className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[11px] px-4 text-[12px] font-semibold transition lg:flex-1 ${
-                selected
-                  ? 'bg-[#102d43] text-white shadow-[0_5px_14px_rgba(16,45,67,0.12)]'
-                  : 'text-[#4d6572] hover:bg-[#f3f7f7] hover:text-[#087e83]'
-              }`}
+              aria-current={selected ? 'page' : undefined}
+              className={`
+                group
+                flex
+                min-w-0
+                min-h-[58px]
+                flex-col
+                items-center
+                justify-center
+                gap-1.5
+                rounded-[11px]
+                px-1
+                py-2
+                text-center
+                transition-all
+                duration-200
+
+                sm:min-h-[48px]
+                sm:flex-row
+                sm:gap-2
+                sm:px-2
+                sm:py-2.5
+
+                lg:min-h-[46px]
+                lg:px-4
+
+                ${
+                  selected
+                    ? 'bg-[#102d43] text-white shadow-[0_5px_14px_rgba(16,45,67,0.12)] ring-1 ring-[#087e83] ring-offset-1'
+                    : 'text-[#4d6572] hover:bg-[#f3f7f7] hover:text-[#087e83]'
+                }
+              `}
             >
-              <Icon size={15} />
-              {label}
+              <Icon
+                size={15}
+                strokeWidth={1.8}
+                className="shrink-0"
+              />
+
+              <span
+                className="
+                  block
+                  min-w-0
+                  max-w-full
+                  text-[9px]
+                  font-semibold
+                  leading-[1.05]
+
+                  sm:text-[10px]
+                  sm:leading-tight
+
+                  lg:text-[12px]
+                "
+              >
+                {label}
+              </span>
             </button>
           );
         })}
@@ -1276,82 +1331,295 @@ function BookNowSection() {
         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#087e83]">
           Book Now
         </p>
+
         <h1 className="mt-2 text-[2rem] font-semibold tracking-[-0.05em] text-[#102d43]">
           Choose your next clean.
         </h1>
+
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[#70848e]">
           Each service opens the same booking flow with that service already selected.
         </p>
       </div>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-2">
+      {/*
+        Mobile       = 1 card per row
+        Small tablet = 2 cards per row
+        Desktop      = all 4 service cards in ONE row
+      */}
+      <div
+        className="
+          mt-7
+          grid
+          grid-cols-1
+          gap-4
+
+          sm:grid-cols-2
+
+          lg:grid-cols-4
+          lg:gap-3
+
+          xl:gap-4
+        "
+      >
         {customerServices.map((service) => {
           const Icon = serviceIcons[service.id] || Sparkles;
           const recurring = ['general', 'deep'].includes(service.id);
 
+          const frequencies = recurring
+            ? ['One-Off', 'Weekly', 'Fortnightly', 'Monthly']
+            : ['One-Off only'];
+
           return (
             <ShellCard
               key={service.id}
-              className="group overflow-hidden transition hover:-translate-y-[2px] hover:border-[#c4d9d9]"
+              className="
+                group
+                flex
+                h-full
+                flex-col
+                overflow-hidden
+                transition-all
+                duration-200
+                hover:-translate-y-[2px]
+                hover:border-[#c4d9d9]
+                hover:shadow-[0_14px_34px_rgba(16,45,67,0.07)]
+              "
             >
               {service.cardImage ? (
-                <div className="relative h-[170px] overflow-hidden bg-[#eef2f0]">
+                <div
+                  className="
+                    relative
+                    h-[158px]
+                    shrink-0
+                    overflow-hidden
+                    bg-[#eef2f0]
+
+                    sm:h-[150px]
+
+                    lg:h-[118px]
+
+                    xl:h-[138px]
+                  "
+                >
                   <img
                     src={service.cardImage}
                     alt={service.cardImageAlt || ''}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    loading="lazy"
+                    className="
+                      h-full
+                      w-full
+                      object-cover
+                      transition-transform
+                      duration-500
+                      group-hover:scale-[1.025]
+                    "
                   />
-                  <div className="absolute bottom-3 left-3 grid h-10 w-10 place-items-center rounded-full bg-white/95 text-[#087e83] shadow-sm">
-                    <Icon size={17} />
+
+                  <div
+                    className="
+                      absolute
+                      bottom-3
+                      left-3
+                      grid
+                      h-9
+                      w-9
+                      place-items-center
+                      rounded-full
+                      border
+                      border-white/70
+                      bg-white/95
+                      text-[#087e83]
+                      shadow-sm
+
+                      lg:h-8
+                      lg:w-8
+                    "
+                  >
+                    <Icon
+                      size={16}
+                      strokeWidth={1.8}
+                    />
                   </div>
                 </div>
               ) : null}
 
-              <div className="p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#087e83]">
+              <div
+                className="
+                  flex
+                  flex-1
+                  flex-col
+                  p-5
+
+                  sm:p-5
+
+                  lg:p-4
+
+                  xl:p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-start
+                    justify-between
+                    gap-3
+                  "
+                >
+                  <div className="min-w-0">
+                    <p
+                      className="
+                        truncate
+                        text-[8px]
+                        font-bold
+                        uppercase
+                        tracking-[0.13em]
+                        text-[#087e83]
+                      "
+                    >
                       {service.eyebrow || 'Matelink Cleaning'}
                     </p>
-                    <h2 className="mt-2 text-xl font-semibold text-[#102d43]">
+
+                    <h2
+                      className="
+                        mt-2
+                        text-[18px]
+                        font-semibold
+                        leading-tight
+                        tracking-[-0.035em]
+                        text-[#102d43]
+
+                        lg:text-[15px]
+
+                        xl:text-[17px]
+                      "
+                    >
                       {service.name}
                     </h2>
                   </div>
-                  <Pill>{recurring ? 'Recurring available' : 'One-Off'}</Pill>
+
+                  <span
+                    className="
+                      shrink-0
+                      rounded-full
+                      border
+                      border-[#dbe4e5]
+                      bg-[#f7f9f9]
+                      px-2
+                      py-1
+                      text-[8px]
+                      font-medium
+                      leading-none
+                      text-[#657a84]
+
+                      lg:px-1.5
+                      lg:text-[7px]
+
+                      xl:px-2
+                      xl:text-[8px]
+                    "
+                  >
+                    {recurring ? 'Recurring' : 'One-Off'}
+                  </span>
                 </div>
 
-                <p className="mt-3 text-[12px] leading-6 text-[#70848e]">
+                <p
+                  className="
+                    mt-3
+                    line-clamp-2
+                    text-[11px]
+                    leading-5
+                    text-[#70848e]
+
+                    lg:text-[10px]
+                    lg:leading-[1.55]
+
+                    xl:text-[11px]
+                  "
+                >
                   {service.cardText ||
                     'Configure your property and see the calculated price before submitting.'}
                 </p>
 
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {(recurring
-                    ? ['One-Off', 'Weekly', 'Fortnightly', 'Monthly']
-                    : ['One-Off only']
-                  ).map((item) => (
+                <div
+                  className="
+                    mt-4
+                    flex
+                    min-h-[48px]
+                    flex-wrap
+                    content-start
+                    gap-1.5
+
+                    lg:mt-3
+                    lg:min-h-[42px]
+                    lg:gap-1
+                  "
+                >
+                  {frequencies.map((item) => (
                     <span
                       key={item}
-                      className="rounded-full bg-[#f2f6f5] px-2.5 py-1 text-[9px] font-medium text-[#59707a]"
+                      className="
+                        rounded-full
+                        bg-[#f2f6f5]
+                        px-2.5
+                        py-1
+                        text-[9px]
+                        font-medium
+                        leading-none
+                        text-[#59707a]
+
+                        lg:px-2
+                        lg:text-[8px]
+                      "
                     >
                       {item}
                     </span>
                   ))}
                 </div>
 
-                <Button asChild className="mt-6 h-11 w-full text-[11px]">
-                  <Link to={`/book?service=${encodeURIComponent(service.id)}`}>
-                    BOOK NOW
-                  </Link>
-                </Button>
+                <div className="mt-auto pt-4 lg:pt-3">
+                  <Button
+                    asChild
+                    className="
+                      h-11
+                      w-full
+                      rounded-[10px]
+                      text-[11px]
+
+                      lg:h-10
+                      lg:text-[10px]
+                    "
+                  >
+                    <Link
+                      to={`/book?service=${encodeURIComponent(service.id)}`}
+                    >
+                      BOOK NOW
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </ShellCard>
           );
         })}
       </div>
 
-      <div className="mt-5 flex gap-3 rounded-[14px] border border-[#dfe5e7] bg-[#f8faf9] px-4 py-4">
-        <BadgeCheck size={18} className="mt-0.5 shrink-0 text-[#087e83]" />
+      <div
+        className="
+          mt-5
+          flex
+          gap-3
+          rounded-[14px]
+          border
+          border-[#dfe5e7]
+          bg-[#f8faf9]
+          px-4
+          py-4
+        "
+      >
+        <BadgeCheck
+          size={18}
+          className="mt-0.5 shrink-0 text-[#087e83]"
+        />
+
         <p className="text-[11px] leading-6 text-[#637984]">
           A booking submission creates a request pending Matelink confirmation.
           Guest booking remains available on the public Book Now page.
